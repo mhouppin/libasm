@@ -8,7 +8,7 @@ C_FUNCTION(ft_strlen):
 
 .loop:
     mov sil, byte [rax]
-    test sil, sil
+    cmp sil, 0
     je .return
     inc rax
     jmp .loop

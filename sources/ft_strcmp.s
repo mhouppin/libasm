@@ -8,7 +8,7 @@ C_FUNCTION(ft_strcmp):
     movzx ecx, byte [rsi]
     sub eax, ecx
     jnz .return
-    test ecx, ecx
+    cmp ecx, 0
     je .return
     inc rdi
     inc rsi
