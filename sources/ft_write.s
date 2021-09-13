@@ -1,4 +1,4 @@
-%include "kernel_symnols.s"
+%include "kernel_symbols.s"
 
 section .text
     global C_FUNCTION(ft_write)
