@@ -69,6 +69,7 @@ C_FUNCTION(ft_list_remove_if):
     mov rcx, qword [rdi + 8]
     mov qword [rsp + 24], rcx
     call C_FUNCTION(free)
+    mov rcx, qword [rsp + 24]
     jmp .loop
 
 .next_iter:
@@ -81,6 +82,6 @@ C_FUNCTION(ft_list_remove_if):
     jmp .loop
 
 .return:
-    add rsp, 32
+    add rsp, 48
     pop rbp
     ret

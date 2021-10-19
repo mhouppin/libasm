@@ -1,3 +1,5 @@
+#include <ctype.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 
@@ -26,36 +28,49 @@ void ft_putstr(const char *s)
     ft_write(STDOUT_FILENO, s, ft_strlen(s));
 }
 
-void ft_getchar(char *c)
+void print_list(t_list *list)
 {
-    ft_read(STDIN_FILENO, c, 1);
+    for (t_list *i = list; i; i = i->next)
+        ft_putstr(i->data);
+}
+
+int filter_str(const void *data)
+{
+    return !isalnum(*(const char *)data);
+}
+
+int compare(const void *a, const void *b)
+{
+    return ft_strcmp(a, b);
 }
 
 int main(void)
 {
-    const char *test = "some string";
-    char *copy = ft_strdup(test);
+    t_list *list = malloc(sizeof(t_list));
+    t_list *iter = list;
+    list->data = ft_strdup("# Prologue\n");
+    char *line = NULL;
+    size_t size = 0;
 
-    if (ft_strcmp(test, copy) == 0)
-        ft_putstr("It works!\n");
-    else
-        ft_putstr("It doesn't work...\n");
+    while (getline(&line, &size, stdin) > 0)
+    {
+        iter->next = malloc(sizeof(t_list));
+        iter->next->data = ft_strdup(line);
+        iter = iter->next;
+    }
+    iter->next = NULL;
 
-    if (ft_strcmp(test, ft_strcpy(copy, "some strinh")) < 0)
-        ft_putstr("It works 2!\n");
-    else
-        ft_putstr("It doesn't work 2...\n");
+    free(line);
 
-    if (ft_strcmp(test, ft_strcpy(copy, "some strinf")) > 0)
-        ft_putstr("It works 3!\n");
-    else
-        ft_putstr("It doesn't work 3...\n");
+    ft_putstr("--->\n");
+    print_list(list);
+    ft_putstr("<---\n \n--->\n");
+    ft_list_remove_if(&list, &filter_str, &free);
+    print_list(list);
+    ft_putstr("<---\n \n--->\n");
+    ft_list_sort(&list, &compare);
+    print_list(list);
+    ft_putstr("<---\n");
 
-    ft_getchar(copy);
-    copy[1] = '\0';
-
-    ft_putstr("You wrote the char: ");
-    ft_putstr(copy);
-    ft_putstr("\n");
-    free(copy);
+    return 0;
 }
