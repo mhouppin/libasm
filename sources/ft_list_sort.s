@@ -75,6 +75,7 @@ C_FUNCTION(ft_list_sort):
     je .step_out
     inc r13
     mov r14, qword [r14 + 8]
+    inc rcx
     test r14, r14
     jnz .step_loop
 
@@ -106,11 +107,11 @@ C_FUNCTION(ft_list_sort):
     jz .merge_from_p
 
 ; Otherwise whichever node is lower will be affected to e.
+    mov rax, qword [rsp + 8]
     push rcx
     sub rsp, 8
     mov rdi, qword [r12]
     mov rsi, qword [r14]
-    mov rax, qword [rsp + 8]
     call rax
     add rsp, 8
     pop rcx
@@ -148,6 +149,7 @@ C_FUNCTION(ft_list_sort):
 
 ; Now p has stepped 'insize' places along, and q has too.
     mov r12, r14
+    jmp .medium_loop
 
 .medium_out:
     mov rax, qword [rsp]
@@ -162,6 +164,7 @@ C_FUNCTION(ft_list_sort):
 
 ; Otherwise repeat, merging lists twice the size.
     add rbx, rbx
+    jmp .big_loop
 
 .big_out:
 

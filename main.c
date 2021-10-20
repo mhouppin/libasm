@@ -1,6 +1,7 @@
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 
 typedef struct s_list
@@ -10,28 +11,18 @@ typedef struct s_list
 }
 t_list;
 
-ssize_t ft_read(int fd, void *b, size_t nbytes);
 int ft_strcmp(const char *s1, const char *s2);
-char *ft_strcpy(char *dst, const char *src);
-char *ft_strdup(const char *str);
-size_t ft_strlen(const char *str);
-ssize_t ft_write(int fd, const void *b, size_t nbytes);
-int ft_atoi_base(const char *s, int base);
 
+int ft_atoi_base(const char *s, int base);
 int ft_list_push_front(t_list **listRef, void *data);
+void ft_list_remove_if(t_list **listRef, int (*filter)(const void *), void (*del)(void *));
 size_t ft_list_size(t_list *list);
 void ft_list_sort(t_list **listRef, int (*comp)(const void *, const void *));
-void ft_list_remove_if(t_list **listRef, int (*filter)(const void *), void (*del)(void *));
-
-void ft_putstr(const char *s)
-{
-    ft_write(STDOUT_FILENO, s, ft_strlen(s));
-}
 
 void print_list(t_list *list)
 {
     for (t_list *i = list; i; i = i->next)
-        ft_putstr(i->data);
+        printf("[%s]\n", i->data);
 }
 
 int filter_str(const void *data)
@@ -46,31 +37,45 @@ int compare(const void *a, const void *b)
 
 int main(void)
 {
-    t_list *list = malloc(sizeof(t_list));
-    t_list *iter = list;
-    list->data = ft_strdup("# Prologue\n");
+    t_list *list = NULL;
     char *line = NULL;
     size_t size = 0;
 
     while (getline(&line, &size, stdin) > 0)
     {
-        iter->next = malloc(sizeof(t_list));
-        iter->next->data = ft_strdup(line);
-        iter = iter->next;
+        char *ptr = strchr(line, '\n');
+
+        if (ptr)
+            *ptr = '\0';
+
+        ft_list_push_front(&list, strdup(line));
     }
-    iter->next = NULL;
 
     free(line);
 
-    ft_putstr("--->\n");
+    printf("Initial list: %zu items\n", ft_list_size(list));
     print_list(list);
-    ft_putstr("<---\n \n--->\n");
     ft_list_remove_if(&list, &filter_str, &free);
+    printf("\nAfter filtering all items not starting with a letter or a number: %zu items\n",  ft_list_size(list));
     print_list(list);
-    ft_putstr("<---\n \n--->\n");
+    puts("\nAfter sorting all items in the ASCII order:");
     ft_list_sort(&list, &compare);
     print_list(list);
-    ft_putstr("<---\n");
+    puts("\n");
+
+    char b10[3], b8[3], b16[3];
+
+    for (int i = 0; i < 50; ++i)
+    {
+        sprintf(b10, "%d", i);
+        sprintf(b8, "%o", i);
+        sprintf(b16, "%x", i);
+
+        printf("('%s', 10) -> %d, ('%s', 8) -> %d, ('%s', 16) -> %d\n",
+            b10, ft_atoi_base(b10, 10),
+            b8, ft_atoi_base(b8, 8),
+            b16, ft_atoi_base(b16, 16));
+    }
 
     return 0;
 }

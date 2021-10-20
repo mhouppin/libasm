@@ -19,7 +19,7 @@ C_FUNCTION(ft_atoi_base):
 .check_sign:
     mov r8b, 0
     cmp esi, 10
-    je .check_digits
+    jne .check_digits
     mov dl, byte [rdi]
     cmp dl, 43
     je .skip_sign
@@ -54,5 +54,5 @@ C_FUNCTION(ft_atoi_base):
     mov ecx, eax
     neg ecx
     test r8b, r8b
-    cmovz eax, ecx
+    cmovnz eax, ecx
     ret
